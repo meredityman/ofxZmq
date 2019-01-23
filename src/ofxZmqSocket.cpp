@@ -48,7 +48,7 @@ void ofxZmqSocket::unbind(string addr)
 }
 
 
-bool ofxZmqSocket::send(const void *data, size_t len, bool nonblocking, bool more)
+bool ofxZmqSocket::send(void *data, size_t len, bool nonblocking, bool more)
 {
 	zmq::message_t m(len);
 	memcpy(m.data(), data, len);
@@ -69,19 +69,15 @@ bool ofxZmqSocket::send(const void *data, size_t len, bool nonblocking, bool mor
 	}
 }
 
-bool ofxZmqSocket::send(void *data, size_t len, bool nonblocking, bool more)
+
+bool ofxZmqSocket::send(string &data, bool nonblocking, bool more)
 {
-	return ofxZmqSocket::send((const void*)data, len, nonblocking, more);
+	return ofxZmqSocket::send((void*)data.data(), data.size(), nonblocking, more);
 }
 
-bool ofxZmqSocket::send(const string &data, bool nonblocking, bool more)
+bool ofxZmqSocket::send(ofBuffer &data, bool nonblocking, bool more)
 {
-	return ofxZmqSocket::send((const void*)data.data(), data.size(), nonblocking, more);
-}
-
-bool ofxZmqSocket::send(const ofBuffer &data, bool nonblocking, bool more)
-{
-	return ofxZmqSocket::send((const void*)data.getBinaryBuffer(), data.size(), nonblocking, more);
+	return ofxZmqSocket::send((void*)data.getBinaryBuffer(), data.size(), nonblocking, more);
 }
 
 

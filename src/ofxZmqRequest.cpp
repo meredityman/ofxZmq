@@ -9,22 +9,18 @@ void ofxZmqRequest::connect(string addr)
 	ofxZmqSocket::connect(addr);
 }
 
-bool ofxZmqRequest::send(const void *data, size_t len, bool nonblocking, bool more)
-{
-	return ofxZmqSocket::send(data, len, nonblocking, more);
-}
-
 bool ofxZmqRequest::send(void *data, size_t len, bool nonblocking, bool more)
 {
 	return ofxZmqSocket::send(data, len, nonblocking, more);
 }
 
-bool ofxZmqRequest::send(const string &data, bool nonblocking, bool more)
+
+bool ofxZmqRequest::send(string &data, bool nonblocking, bool more)
 {
-	return ofxZmqSocket::send((const void*)data.data(), data.size(), nonblocking, more);
+	return ofxZmqSocket::send((void*)data.data(), data.size(), nonblocking, more);
 }
 
-bool ofxZmqRequest::send(const ofBuffer &data, bool nonblocking, bool more)
+bool ofxZmqRequest::send(ofBuffer &data, bool nonblocking, bool more)
 {
 	return ofxZmqSocket::send(data, nonblocking, more);
 }

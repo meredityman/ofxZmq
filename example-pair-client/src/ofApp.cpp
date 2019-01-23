@@ -32,8 +32,8 @@ void ofApp::draw()
     
     if(client.isConnected())
     {
-        if(ofGetFrameNum() % 100 == 0)
-        {
+        //if(ofGetFrameNum() % 100 == 0)
+        //{
             string message  = "Hello From client: " + ofToString(ofGetFrameNum());
             if (!client.send(message))
             {
@@ -43,7 +43,7 @@ void ofApp::draw()
                 ofLog() << "SENT message: " << message;
                 
             }
-        }
+        //}
     }else
     {
         ofLog() << "NOT CONNECTED";

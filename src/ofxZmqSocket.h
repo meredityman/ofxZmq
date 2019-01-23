@@ -36,10 +36,9 @@ protected:
 	void disconnect(string addr);
 	void unbind(string addr);
 
-	bool send(const void *data, size_t len, bool nonblocking, bool more);
 	bool send(void *data, size_t len, bool nonblocking, bool more);
-	bool send(const string &data, bool nonblocking, bool more);
-	bool send(const ofBuffer &data, bool nonblocking, bool more);
+	bool send(string &data, bool nonblocking, bool more);
+	bool send(ofBuffer &data, bool nonblocking, bool more);
 	
 	bool receive(string &data);
 	bool receive(ofBuffer &data);

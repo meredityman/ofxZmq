@@ -11,10 +11,9 @@ public:
 	
 	void bind(string addr);
 	
-	bool send(const void *data, size_t len, bool nonblocking = false, bool more = false);
 	bool send(void *data, size_t len, bool nonblocking = false, bool more = false);
-	bool send(const string &data, bool nonblocking = false, bool more = false);
-	bool send(const ofBuffer &data, bool nonblocking = false, bool more = false);
+	bool send(string &data, bool nonblocking = false, bool more = false);
+	bool send(ofBuffer &data, bool nonblocking = false, bool more = false);
 	bool receive(string &data);
 	bool receive(ofBuffer &data);
 	
