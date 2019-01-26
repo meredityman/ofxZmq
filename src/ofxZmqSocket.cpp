@@ -47,7 +47,73 @@ void ofxZmqSocket::unbind(string addr)
 	socket.unbind(addr.c_str());
 }
 
+void ofxZmqSocket::freeData(void *data, void *hint)
+{
+    if(data)
+    {
+        free(data);
+        ofLog() << "free";
+    }
+}
 
+void ofxZmqSocket::freeBufferData(void *data, void *hint)
+{
+    if(data)
+    {
+        ofBuffer* buffer = (ofBuffer*)data;
+        buffer->clear();
+        int size = buffer->size();
+
+        ofLog() << "freed buffer: " << size;
+        free(buffer);
+    }
+}
+
+bool ofxZmqSocket::send(void *data, size_t len, bool nonblocking, bool more)
+{
+    
+    int flags = 0;
+    nonblocking = true;
+    
+    if (more) flags |= ZMQ_SNDMORE;
+    if (nonblocking) flags |= ZMQ_DONTWAIT;
+    
+    zmq::message_t m(data, len, &ofxZmqSocket::freeData, &flags);
+
+    try
+    {
+        return socket.send(m, flags);
+    }
+    catch (zmq::error_t &e)
+    {
+        ofLog(OF_LOG_ERROR, "ofxZmqSocket::send: %s", e.what());
+        return false;
+    }
+}
+
+bool ofxZmqSocket::sendBuffer(ofBuffer* buffer, bool nonblocking, bool more)
+{
+    
+    int flags = 0;
+    nonblocking = true;
+    
+    if (more) flags |= ZMQ_SNDMORE;
+    if (nonblocking) flags |= ZMQ_DONTWAIT;
+    
+    zmq::message_t m(buffer->getData(), buffer->size(), &ofxZmqSocket::freeBufferData, &flags);
+    
+    try
+    {
+        return socket.send(m, flags);
+    }
+    catch (zmq::error_t &e)
+    {
+        ofLog(OF_LOG_ERROR, "ofxZmqSocket::send: %s", e.what());
+        return false;
+    }
+}
+
+/*
 bool ofxZmqSocket::send(void *data, size_t len, bool nonblocking, bool more)
 {
 	zmq::message_t m(len);
@@ -79,7 +145,7 @@ bool ofxZmqSocket::send(ofBuffer &data, bool nonblocking, bool more)
 {
 	return ofxZmqSocket::send((void*)data.getBinaryBuffer(), data.size(), nonblocking, more);
 }
-
+*/
 
 bool ofxZmqSocket::receive(string &data)
 {

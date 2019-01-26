@@ -19,7 +19,16 @@ bool ofxZmqPair::send(void *data, size_t len, bool nonblocking, bool more)
 	return ofxZmqSocket::send(data, len, nonblocking, more);
 }
 
+bool ofxZmqPair::send(string* data, bool nonblocking, bool more)
+{
+    return ofxZmqSocket::send((void*)data->data(), data->size(), nonblocking, more);
+}
 
+bool ofxZmqPair::send(ofBuffer* buffer, bool nonblocking, bool more)
+{
+    return ofxZmqSocket::sendBuffer(buffer, nonblocking, more);
+}
+/*
 bool ofxZmqPair::send(string &data, bool nonblocking, bool more)
 {
 	return ofxZmqSocket::send((void*)data.data(), data.size(), nonblocking, more);
@@ -29,6 +38,8 @@ bool ofxZmqPair::send(ofBuffer &data, bool nonblocking, bool more)
 {
 	return ofxZmqSocket::send(data, nonblocking, more);
 }
+*/
+
 
 bool ofxZmqPair::receive(string &data)
 {

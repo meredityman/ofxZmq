@@ -24,7 +24,9 @@ public:
 	long getSendHighWaterMark();
 	long getReceiveHighWaterMark();
 
-protected:
+    
+    static void freeBufferData(void *data, void *hint);
+    static void freeData(void *data, void *hint);
 
 	zmq::socket_t socket;
 	zmq::pollitem_t items[1];
@@ -36,9 +38,10 @@ protected:
 	void disconnect(string addr);
 	void unbind(string addr);
 
+    bool sendBuffer(ofBuffer* buffer, bool nonblocking, bool more);
 	bool send(void *data, size_t len, bool nonblocking, bool more);
-	bool send(string &data, bool nonblocking, bool more);
-	bool send(ofBuffer &data, bool nonblocking, bool more);
+	//bool send(string &data, bool nonblocking, bool more);
+	//bool send(ofBuffer &data, bool nonblocking, bool more);
 	
 	bool receive(string &data);
 	bool receive(ofBuffer &data);
