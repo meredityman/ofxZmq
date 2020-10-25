@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2019 Contributors as noted in the AUTHORS file
 
     This file is part of libzmq, the ZeroMQ core engine in C++.
 
@@ -27,24 +27,43 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __ZMQ_PLATFORM_HPP_INCLUDED__
-#define __ZMQ_PLATFORM_HPP_INCLUDED__
+#ifndef __ZMQ_WSS_ENGINE_HPP_INCLUDED__
+#define __ZMQ_WSS_ENGINE_HPP_INCLUDED__
 
-//  This is the platform definition for the MSVC platform.
-//  As a first step of the build process it is copied to
-//  zmq directory to take place of platform.hpp generated from
-//  platform.hpp.in on platforms supported by GNU autotools.
-//  Place any MSVC-specific definitions here.
+#include <gnutls/gnutls.h>
+#include "ws_engine.hpp"
 
-#ifdef _WIN32
-#define ZMQ_HAVE_WINDOWS
-#define ZMQ_USE_SELECT
-#endif
+#define WSS_BUFFER_SIZE 8192
 
-#ifdef __APPLE_CC__
-#define ZMQ_HAVE_OSX
-#define ZMQ_HAVE_UIO
-#define ZMQ_USE_SELECT
-#endif
+namespace zmq
+{
+class wss_engine_t : public ws_engine_t
+{
+  public:
+    wss_engine_t (fd_t fd_,
+                  const options_t &options_,
+                  const endpoint_uri_pair_t &endpoint_uri_pair_,
+                  ws_address_t &address_,
+                  bool client_,
+                  void *tls_server_cred_,
+                  const std::string &hostname_);
+    ~wss_engine_t ();
+
+    void out_event ();
+
+  protected:
+    bool handshake ();
+    void plug_internal ();
+    int read (void *data, size_t size_);
+    int write (const void *data_, size_t size_);
+
+  private:
+    bool do_handshake ();
+
+    bool _established;
+    gnutls_certificate_credentials_t _tls_client_cred;
+    gnutls_session_t _tls_session;
+};
+}
 
 #endif

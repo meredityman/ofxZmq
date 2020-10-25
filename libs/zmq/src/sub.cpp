@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2016 Contributors as noted in the AUTHORS file
 
     This file is part of libzmq, the ZeroMQ core engine in C++.
 
@@ -27,6 +27,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "precompiled.hpp"
 #include "sub.hpp"
 #include "msg.hpp"
 
@@ -44,8 +45,9 @@ zmq::sub_t::~sub_t ()
 {
 }
 
-int zmq::sub_t::xsetsockopt (int option_, const void *optval_,
-    size_t optvallen_)
+int zmq::sub_t::xsetsockopt (int option_,
+                             const void *optval_,
+                             size_t optvallen_)
 {
     if (option_ != ZMQ_SUBSCRIBE && option_ != ZMQ_UNSUBSCRIBE) {
         errno = EINVAL;
@@ -54,26 +56,18 @@ int zmq::sub_t::xsetsockopt (int option_, const void *optval_,
 
     //  Create the subscription message.
     msg_t msg;
-    int rc = msg.init_size (optvallen_ + 1);
+    int rc;
+    const unsigned char *data = static_cast<const unsigned char *> (optval_);
+    if (option_ == ZMQ_SUBSCRIBE) {
+        rc = msg.init_subscribe (optvallen_, data);
+    } else {
+        rc = msg.init_cancel (optvallen_, data);
+    }
     errno_assert (rc == 0);
-    unsigned char *data = (unsigned char*) msg.data ();
-    if (option_ == ZMQ_SUBSCRIBE)
-        *data = 1;
-    else
-    if (option_ == ZMQ_UNSUBSCRIBE)
-        *data = 0;
-    memcpy (data + 1, optval_, optvallen_);
 
     //  Pass it further on in the stack.
-    int err = 0;
     rc = xsub_t::xsend (&msg);
-    if (rc != 0)
-        err = errno;
-    int rc2 = msg.close ();
-    errno_assert (rc2 == 0);
-    if (rc != 0)
-        errno = err;
-    return rc;
+    return close_and_return (&msg, rc);
 }
 
 int zmq::sub_t::xsend (msg_t *)

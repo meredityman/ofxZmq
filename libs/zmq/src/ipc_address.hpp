@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2007-2015 Contributors as noted in the AUTHORS file
+    Copyright (c) 2007-2016 Contributors as noted in the AUTHORS file
 
     This file is part of libzmq, the ZeroMQ core engine in C++.
 
@@ -30,47 +30,45 @@
 #ifndef __ZMQ_IPC_ADDRESS_HPP_INCLUDED__
 #define __ZMQ_IPC_ADDRESS_HPP_INCLUDED__
 
+#if defined ZMQ_HAVE_IPC
+
 #include <string>
 
-#include "platform.hpp"
-
-#if !defined ZMQ_HAVE_WINDOWS && !defined ZMQ_HAVE_OPENVMS
-
+#if defined _MSC_VER
+#include <afunix.h>
+#else
 #include <sys/socket.h>
 #include <sys/un.h>
+#endif
+
+#include "macros.hpp"
 
 namespace zmq
 {
+class ipc_address_t
+{
+  public:
+    ipc_address_t ();
+    ipc_address_t (const sockaddr *sa_, socklen_t sa_len_);
+    ~ipc_address_t ();
 
-    class ipc_address_t
-    {
-    public:
+    //  This function sets up the address for UNIX domain transport.
+    int resolve (const char *path_);
 
-        ipc_address_t ();
-        ipc_address_t (const sockaddr *sa, socklen_t sa_len);
-        ~ipc_address_t ();
+    //  The opposite to resolve()
+    int to_string (std::string &addr_) const;
 
-        //  This function sets up the address for UNIX domain transport.
-        int resolve (const char *path_);
+    const sockaddr *addr () const;
+    socklen_t addrlen () const;
 
-        //  The opposite to resolve()
-        int to_string (std::string &addr_);
+  private:
+    struct sockaddr_un _address;
+    socklen_t _addrlen;
 
-        const sockaddr *addr () const;
-        socklen_t addrlen () const;
-
-    private:
-
-        struct sockaddr_un address;
-
-        ipc_address_t (const ipc_address_t&);
-        const ipc_address_t &operator = (const ipc_address_t&);
-    };
-
+    ZMQ_NON_COPYABLE_NOR_MOVABLE (ipc_address_t)
+};
 }
 
 #endif
 
 #endif
-
-

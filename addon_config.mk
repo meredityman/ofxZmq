@@ -29,11 +29,11 @@ common:
 
 	# any special flag that should be passed to the compiler when using this
 	# addon
-	# ADDON_CFLAGS =
+	ADDON_CFLAGS = -DZMQ_BUILD_DRAFT_API=1
 
 	# any special flag that should be passed to the linker when using this
 	# addon, also used for system libraries with -lname
-	# ADDON_LDFLAGS =
+	#ADDON_LDFLAGS =
 
 	# linux only, any library that should be included in the project using
 	# pkg-config
@@ -58,10 +58,6 @@ common:
 
 
 linuxarmv6l:
-	ADDON_CFLAGS = -I$(RPI_ROOT)/usr/include/
-	ADDON_LDFLAGS = -lzmq
-	ADDON_SOURCES_EXCLUDE = libs/%
-
 
 
 linuxarmv7l:
